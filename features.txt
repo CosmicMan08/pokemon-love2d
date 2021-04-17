@@ -1,0 +1,16 @@
+DONE FEATURES:
+1. Tile drawing
+2. Tile collision
+3. Gridlocked player movement
+4. Walking and Idle animations in all four directions 
+5. Smoothed movement for walking
+6. Adding npcs and triggers loaded on the map seperately from tiles
+TODO FEATURES:
+1. Loading maps from text files
+2. Add dialogue boxes that can read from files to make dialogue trees
+  A. Have NPCs and signs that can can load dialogue trees
+3. Level editor (separate love file from gb engine)
+MAYBE???:
+1. GBC palletes
+2. Battles
+3. Music loading when moving to different areas
