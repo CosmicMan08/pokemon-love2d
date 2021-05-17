@@ -1,3 +1,4 @@
+love.window.setTitle("pokemon gb engine")
 love.window.updateMode(640, 576)
 
 function create_array_from_file(mapsplit, stringname)
@@ -9,10 +10,13 @@ function create_array_from_file(mapsplit, stringname)
 	tileTable = levelarray
 end
 
+timerThingy = 1
+gameFreeze = false
+
 local player = {
-	ypos = 5;
-	xpos = 5;
-	direction = "down";
+	ypos = 13;
+	xpos = 12;
+	direction = "up";
 	still = true;
 	moving = false;
 	walkcycleframe = 1;
@@ -23,7 +27,7 @@ local player = {
 globalanimationframe = 1
 
 collisionarray = {
-	1,2,2,1,1,1,2,2
+	1,2,2,1,1,1,2,2,1
 }
 
 tileTable = {
@@ -42,41 +46,257 @@ tileTable = {
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,8,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,7,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
-  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+  {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,9,9,9,9,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
   {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2},
   {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2}
 }
 
+function drawFred()
+	if player.still == false then
+		if player.direction == "down" then
+			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
+				love.graphics.draw(fredsheet, fredwalkingdown1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
+				love.graphics.draw(fredsheet, fredwalkingdown2, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
+				love.graphics.draw(fredsheet, fredwalkingdown3, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
+				love.graphics.draw(fredsheet, fredwalkingdown4, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+		end
+		if player.direction == "up" then
+			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
+				love.graphics.draw(fredsheet, fredwalkingup1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
+				love.graphics.draw(fredsheet, fredwalkingup2, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
+				love.graphics.draw(fredsheet, fredwalkingup3, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
+				love.graphics.draw(fredsheet, fredwalkingup4, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+		end
+		if player.direction == "left" then
+			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
+				love.graphics.draw(fredsheet, fredwalkingleft1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
+				love.graphics.draw(fredsheet, fredwalkingleft2, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
+				love.graphics.draw(fredsheet, fredwalkingleft1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
+				love.graphics.draw(fredsheet, fredwalkingleft2, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+		end
+		if player.direction == "right" then
+			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
+				love.graphics.draw(fredsheet, fredwalkingright1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
+				love.graphics.draw(fredsheet, fredwalkingright2, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
+				love.graphics.draw(fredsheet, fredwalkingright1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end
+			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
+				love.graphics.draw(fredsheet, fredwalkingright2, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+			end 
+		end
+	else
+		if player.direction == "down" then
+			love.graphics.draw(fredsheet, fredwalkingdown1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+		end
+		if player.direction == "up" then
+			love.graphics.draw(fredsheet, fredwalkingup1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+		end
+		if player.direction == "left" then
+			love.graphics.draw(fredsheet, fredwalkingleft1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+		end
+		if player.direction == "right" then
+			love.graphics.draw(fredsheet, fredwalkingright1, 5 * 64 - 64, 5 * 64 - 80, 0, 4, 4)
+		end
+	end
+end
+
 function checkForward()
 	for i = 1, 1 do
 		if entityTable[i]["entityType"] == "sign" then
 			if player.direction == "up" and player.xpos == entityTable[i]["xPos"] and player.ypos - 1 == entityTable[i]["yPos"] then
-				-- love.graphics.print(dialogueTable[entityTable[i]["dialoguePos"]][1], 400, 300)
-				player.direction = "left"
-				loadDialogue(dialogueTable[entityTable[i]["dialoguePos"]][1])
+				currentDialogue = dialogueTable[entityTable[i]["dialoguePos"]][1]
 			end
 		end
 		i = i + 1
 	end
 end
 
-function loadDialogue(dialogue)
-	love.graphics.draw(uisheet, ui1, 1 * 32, 7 * 32, 0, 4, 4)
+function drawDialogue(dialogue)
+	if currentDialogue ~= nil then
+		gameFreeze = true
+		-- line 1
+		love.graphics.draw(uisheet, ui1, 0 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 1 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 2 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 3 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 4 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 5 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 6 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 7 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 8 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 9 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 10 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 11 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 12 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 13 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 14 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 15 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 16 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 17 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 18 * 32, 12 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui4, 19 * 32, 12 * 32, 0, 4, 4)
+		-- line 2
+		love.graphics.draw(uisheet, ui6, 0 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 1 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 2 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 3 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 4 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 5 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 6 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 7 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 8 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 9 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 10 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 11 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 12 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 13 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 14 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 15 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 16 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 17 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 18 * 32, 13 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui6, 19 * 32, 13 * 32, 0, 4, 4)
+		-- line 3
+		love.graphics.draw(uisheet, ui6, 0 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 1 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 2 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 3 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 4 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 5 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 6 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 7 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 8 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 9 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 10 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 11 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 12 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 13 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 14 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 15 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 16 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 17 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 18 * 32, 14 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui6, 19 * 32, 14 * 32, 0, 4, 4)
+		-- line 4
+		love.graphics.draw(uisheet, ui6, 0 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 1 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 2 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 3 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 4 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 5 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 6 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 7 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 8 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 9 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 10 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 11 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 12 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 13 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 14 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 15 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 16 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 17 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 18 * 32, 15 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui6, 19 * 32, 15 * 32, 0, 4, 4)
+		-- line 5
+		love.graphics.draw(uisheet, ui6, 0 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 1 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 2 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 3 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 4 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 5 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 6 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 7 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 8 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 9 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 10 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 11 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 12 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 13 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 14 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 15 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 16 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 17 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui7, 18 * 32, 16 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui6, 19 * 32, 16 * 32, 0, 4, 4)
+		-- line 6
+		love.graphics.draw(uisheet, ui3, 0 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 1 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 2 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 3 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 4 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 5 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 6 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 7 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 8 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 9 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 10 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 11 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 12 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 13 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 14 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 15 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 16 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 17 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui5, 18 * 32, 17 * 32, 0, 4, 4)
+		love.graphics.draw(uisheet, ui2, 19 * 32, 17 * 32, 0, 4, 4)
+		
+		unCreativeVariableName = 1
+		dialogueSeperation = ""
+		timerThingy = timerThingy + 1
+		if string.len(dialogueSeperation) < string.len(currentDialogue) then
+			timerThingy = 1
+		end
+		if timerThingy >= 4 then
+			-- drawnText = {{0,0,0,1}, dialogueSeperation}
+			-- drawnText[2] = dialogueSeperation
+			unCreativeVariableName = unCreativeVariableName + 1
+			dialogueSeperation = dialogueSeperation .. string.sub(currentDialogue, unCreativeVariableName, unCreativeVariableName)
+			print(dialogueSeperation)
+		end
+	end
 end
 
 entityTable = {
 	-- {"entityType", xPos, yPos, arg1... argEtc}
-	{entityType = "sign", xPos = 12, yPos = 12, dialoguePos = 1}
+	{entityType = "sign", xPos = 12, yPos = 12, dialoguePos = 1},
+	{entityType = "sign", xPos = 13, yPos = 15, dialoguePos = 2}
 }
 
 dialogueTable = {
-	{"laura is palm", "latin here"}
+	{"laura is palm", "latin here"},
+	{"yo mari0 amirite\n\nanyway time to do magic"}
 }
 
 function drawTiles(world)
@@ -107,81 +327,97 @@ function drawTiles(world)
 				if tileTable[ykey][xkey] == 8 then
 					love.graphics.draw(tilesheet, tile8, (xkey * 64 + 256 + (player.horiwalkframe * 4)) + player.xpos * -64, (ykey * 64 + 256 + (player.vertwalkframe * 4)) + player.ypos * -64, 0, 4, 4)
 				end
+				if tileTable[ykey][xkey] == 9 then
+					love.graphics.draw(tilesheet, tile1, (xkey * 64 + 256 + (player.horiwalkframe * 4)) + player.xpos * -64, (ykey * 64 + 256 + (player.vertwalkframe * 4)) + player.ypos * -64, 0, 4, 4)
+				end
+			end
+		end
+	end
+end
+
+function drawForegroundTiles(world)
+	for ykey, v in ipairs(tileTable) do
+		for xkey, b in ipairs(v) do
+			if tileTable[ykey][xkey] ~= 0 then
+				if tileTable[ykey][xkey] == 9 then
+					love.graphics.draw(tilesheet, tile9, (xkey * 64 + 256 + (player.horiwalkframe * 4)) + player.xpos * -64, (ykey * 64 + 256 + (player.vertwalkframe * 4)) + player.ypos * -64, 0, 4, 4)
+				end
 			end
 		end
 	end
 end
 
 function love.update(dt)
-	if player.still == true then
-		if love.keyboard.isDown("s") then
-			if collisionarray[tileTable[player.ypos + 1][player.xpos]] == 1 then
-				player.ypos = player.ypos + 1
-				player.still = false
+	if gameFreeze == false then
+		if player.still == true then
+			if love.keyboard.isDown("s") then
+				if collisionarray[tileTable[player.ypos + 1][player.xpos]] == 1 then
+					player.ypos = player.ypos + 1
+					player.still = false
+				end
+				player.direction = "down"
+				player.moving = true
+			elseif love.keyboard.isDown('w') then
+				if collisionarray[tileTable[player.ypos - 1][player.xpos]] == 1 then
+					player.ypos = player.ypos - 1
+					player.still = false
+				end
+				player.direction = "up"
+				player.moving = true
+			elseif love.keyboard.isDown('a') then
+				if collisionarray[tileTable[player.ypos][player.xpos - 1]] == 1 then
+					player.xpos = player.xpos - 1
+					player.still = false
+				end
+				player.direction = "left"
+				player.moving = true
+			elseif love.keyboard.isDown("d") then
+				if collisionarray[tileTable[player.ypos][player.xpos + 1]] == 1 then
+					player.xpos = player.xpos + 1
+					player.still = false
+				end
+				player.direction = "right"
+				player.moving = true
+			elseif love.keyboard.isDown("space") then
+				checkForward()
 			end
-			player.direction = "down"
-			player.moving = true
-		elseif love.keyboard.isDown('w') then
-			if collisionarray[tileTable[player.ypos - 1][player.xpos]] == 1 then
-				player.ypos = player.ypos - 1
-				player.still = false
-			end
-			player.direction = "up"
-			player.moving = true
-		elseif love.keyboard.isDown('a') then
-			if collisionarray[tileTable[player.ypos][player.xpos - 1]] == 1 then
-				player.xpos = player.xpos - 1
-				player.still = false
-			end
-			player.direction = "left"
-			player.moving = true
-		elseif love.keyboard.isDown("d") then
-			if collisionarray[tileTable[player.ypos][player.xpos + 1]] == 1 then
-				player.xpos = player.xpos + 1
-				player.still = false
-			end
-			player.direction = "right"
-			player.moving = true
-		elseif love.keyboard.isDown("space") then
-			checkForward()
 		end
-	end
-	if globalanimationframe > 64 or globalanimationframe == 64 then
-		globalanimationframe = 1
-	else
-		globalanimationframe = globalanimationframe + 1
-	end
-	if player.still == false then
-		if player.walkcycleframe > 32 or player.walkcycleframe == 32 then
-			player.walkcycleframe = 1
-		else
-			player.walkcycleframe = player.walkcycleframe + 1
-		end
-		if player.walkcycletime > 16 or player.walkcycletime == 16 then
-			player.walkcycletime = 1
-			player.vertwalkframe = 0
-			player.horiwalkframe = 0
-			player.still = true
-			player.moving = false
-		else
-			if player.direction == "up" then
-				player.vertwalkframe = player.walkcycletime - 16
+		if player.still == false then
+			if player.walkcycleframe > 32 or player.walkcycleframe == 32 then
+				player.walkcycleframe = 1
+			else
+				player.walkcycleframe = player.walkcycleframe + 1
 			end
-			if player.direction == "right" then
-				player.horiwalkframe = player.walkcycletime * -1 + 15
+			if player.walkcycletime > 16 or player.walkcycletime == 16 then
+				player.walkcycletime = 1
+				player.vertwalkframe = 0
+				player.horiwalkframe = 0
+				player.still = true
+				player.moving = false
+			else
+				if player.direction == "up" then
+					player.vertwalkframe = player.walkcycletime - 16
+				end
+				if player.direction == "right" then
+					player.horiwalkframe = player.walkcycletime * -1 + 15
+				end
+				if player.direction == "down" then
+					player.vertwalkframe = player.walkcycletime * -1 + 15
+				end
+				if player.direction == "left" then
+					player.horiwalkframe = player.walkcycletime - 16
+				end
+				player.walkcycletime = player.walkcycletime + 1
 			end
-			if player.direction == "down" then
-				player.vertwalkframe = player.walkcycletime * -1 + 15
-			end
-			if player.direction == "left" then
-				player.horiwalkframe = player.walkcycletime - 16
-			end
-			player.walkcycletime = player.walkcycletime + 1
 		end
 	end
 end
 
 function love.load()
+
+pokemonFont = love.graphics.newFont("PokemonFont.ttf", 32, "mono", love.graphics.getDPIScale())
+
+love.graphics.setFont(pokemonFont)
 
 sourcecode = love.filesystem.getSource()
 
@@ -200,6 +436,7 @@ tile5 = love.graphics.newQuad(16, 16, 16, 16, tilesheet)
 tile6 = love.graphics.newQuad(32, 16, 16, 16, tilesheet)
 tile7 = love.graphics.newQuad(0, 32, 16, 16, tilesheet)
 tile8 = love.graphics.newQuad(16, 32, 16, 16, tilesheet)
+tile9 = love.graphics.newQuad(32, 32, 16, 16, tilesheet)
 
 uisheet = love.graphics.newImage("uisheet.png")
 ui1 = love.graphics.newQuad(0, 0, 8, 8, uisheet)
@@ -227,78 +464,17 @@ end
 
 function love.draw()
 	drawTiles()
+	
+	--love.graphics.print(player.direction, 400, 300)
+	--love.graphics.print(globalanimationframe, 400, 200)
+	
+	drawFred()
 
-	love.graphics.print(player.direction, 400, 300)
-	love.graphics.print(globalanimationframe, 400, 200)
-	if player.still == false then
-		if player.direction == "down" then
-			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
-				love.graphics.draw(fredsheet, fredwalkingdown1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
-				love.graphics.draw(fredsheet, fredwalkingdown2, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
-				love.graphics.draw(fredsheet, fredwalkingdown3, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
-				love.graphics.draw(fredsheet, fredwalkingdown4, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-		end
-		if player.direction == "up" then
-			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
-				love.graphics.draw(fredsheet, fredwalkingup1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
-				love.graphics.draw(fredsheet, fredwalkingup2, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
-				love.graphics.draw(fredsheet, fredwalkingup3, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
-				love.graphics.draw(fredsheet, fredwalkingup4, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-		end
-		if player.direction == "left" then
-			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
-				love.graphics.draw(fredsheet, fredwalkingleft1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
-				love.graphics.draw(fredsheet, fredwalkingleft2, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
-				love.graphics.draw(fredsheet, fredwalkingleft1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
-				love.graphics.draw(fredsheet, fredwalkingleft2, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-		end
-		if player.direction == "right" then
-			if player.walkcycleframe > 0 and player.walkcycleframe < 9 then
-				love.graphics.draw(fredsheet, fredwalkingright1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 8 and player.walkcycleframe < 17 then
-				love.graphics.draw(fredsheet, fredwalkingright2, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 16 and player.walkcycleframe < 25 then
-				love.graphics.draw(fredsheet, fredwalkingright1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end
-			if player.walkcycleframe > 24 and player.walkcycleframe < 33 then
-				love.graphics.draw(fredsheet, fredwalkingright2, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-			end 
-		end
-	else
-		if player.direction == "down" then
-			love.graphics.draw(fredsheet, fredwalkingdown1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-		end
-		if player.direction == "up" then
-			love.graphics.draw(fredsheet, fredwalkingup1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-		end
-		if player.direction == "left" then
-			love.graphics.draw(fredsheet, fredwalkingleft1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-		end
-		if player.direction == "right" then
-			love.graphics.draw(fredsheet, fredwalkingright1, 5 * 64 - 64, 5 * 64 - 84, 0, 4, 4)
-		end
-	end
+	drawForegroundTiles()
+
+	love.graphics.setScissor(5 * 64 - 64, 5 * 64 - 80, 64, 32)
+	drawFred()
+	love.graphics.setScissor()
+
+	drawDialogue(currentDialogue)
 end
