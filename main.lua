@@ -9,13 +9,46 @@ function love.keypressed(key)
 	end
 end
 
-function create_array_from_file(mapsplit, stringname)
-	local levelarray = {}
-	for i = 1, 1 do 
-		line = string.gmatch(mapsplit, stringname)
-		table.insert(levelarray, 1, line)
+function loadMapFromFile(loadedLevel)
+	print(loadedLevel)
+	local levelEnd = string.find(loadedLevel, "/")
+	local commaPos = 0
+	local commaEnd = 0
+	local levelArray = {}
+	local levelDecay = string.sub(loadedLevel, 1, levelEnd - 1)
+	local newRow = {}
+	print(string.sub(loadedLevel, 1, levelEnd - 1))
+	print(newRow)
+	local _,levelTiles = string.gsub(levelDecay,",",",")
+	print(levelTiles)
+	local _,levelRows = string.gsub(levelDecay,"*","*")
+	print(levelRows)
+	local levelColumns = levelTiles / levelRows
+	print(levelColumns)
+	for v = 1, levelRows do 
+		for k = 1, levelColumns do 
+			if commaPos == nil then
+				commaPos = 0
+			end
+			newTile = tonumber(string.sub(levelDecay, 1, commaPos - 1))
+			levelDecay = string.sub(levelDecay, string.find(levelDecay, ",") + 1, string.len(levelDecay))
+			commaPos = string.find(levelDecay, ",")
+			table.insert(newRow, newTile)
+			--print(commaPos)
+			--print(commaEnd)
+			--print(levelDecay)
+			print(newTile)
+			--print(newRow)
+		end
+		table.insert(levelArray, newRow)
+		newRow = {}
 	end
-	tileTable = levelarray
+	tileTable = levelArray
+	print(tileTable)
+
+	-- entity loading!
+
+	local entityList = string.sub(loadedLevel, string.find(loadedLevel, "/") + 1, string.find(loadedLevel, "^") - 1)
 end
 
 halfSpacePress = false
@@ -27,8 +60,8 @@ gameFreeze = false
 veryHiddenDebugMode = false
 
 local player = {
-	ypos = 13;
-	xpos = 12;
+	ypos = 1;
+	xpos = 1;
 	direction = "up";
 	still = true;
 	moving = false;
@@ -314,9 +347,15 @@ function drawDialogue(dialogue)
 end
 
 entityTable = {
+}
+
+dialogueTable = {
+}
+
+entityTable = {
 	-- {"entityType", xPos, yPos, arg1... argEtc}
-	{entityType = "sign", xPos = 12, yPos = 12, dialoguePos = 1},
-	{entityType = "sign", xPos = 13, yPos = 15, dialoguePos = 2}
+	{entityType = "sign", xPos = 11, yPos = 12, dialoguePos = 1},
+	{entityType = "sign", xPos = 12, yPos = 15, dialoguePos = 2}
 }
 
 dialogueTable = {
@@ -505,9 +544,9 @@ pokemonFont = love.graphics.newFont("PokemonFont.ttf", 32, "mono", love.graphics
 
 love.graphics.setFont(pokemonFont)
 
-sourcecode = love.filesystem.getSource()
-
-testmap1 = love.filesystem.read(sourcecode .. "testmap1.txt")
+testmap1 = love.filesystem.read("testmap1.txt")
+print(testmap1)
+loadMapFromFile(testmap1)
 
 -- create_array_from_file("testmap1.txt", "/n")
 

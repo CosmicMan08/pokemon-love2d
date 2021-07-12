@@ -9,7 +9,7 @@ DONE FEATURES:
 8. Add dialogue boxes that can read from files to make dialogue trees
   A. Have NPCs and signs that can can load dialogue trees
 TODO FEATURES:
-1. Loading maps from text files
+1. Loading maps from text files - wip
 2. Level editor (separate love file from gb engine)
 MAYBE???:
 1. GBC palletes
